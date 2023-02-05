@@ -1,4 +1,4 @@
-# Google Ads API Client Library for Java
+# Client Library for Java
 
 This project hosts the Java client library for the Google Ads API.
 
