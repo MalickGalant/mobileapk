@@ -1,0 +1,371 @@
+/*
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * These are shared settings common to all Google Ads Java library subprojects.
+ */
+
+
+import org.gradle.api.DefaultTask
+import groovy.io.FileType
+import groovy.io.FileVisitResult
+import java.util.regex.Matcher
+
+plugins {
+  id 'java-library'
+  id 'com.google.api-ads.nexus-publish'
+  id 'java-test-fixtures'
+  id 'signing'
+}
+
+// The order of the repositories here is important. If mavenLocal() is first,
+// then when we attempt to resolve artifacts like sources for the third_party
+// directory, gradle will not even attempt to look for them in mavenCentral.
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+java.targetCompatibility = JavaVersion.VERSION_1_8
+
+java {
+  withSourcesJar()
+  withJavadocJar()
+}
+
+jar {
+  manifest {
+    attributes(
+        'Implementation-Title': 'Google Ads API - client library for Java',
+        'Implementation-Version': archiveVersion)
+  }
+
+  // Adds license information to the META-INF directory in the jar.
+  into('META-INF') {
+    from("${project.rootProject.rootDir}") {
+      include "LICENSE"
+      include "THIRD-PARTY-LICENSE.txt"
+    }
+  }
+}
+
+javadoc {
+  options.addStringOption('Xdoclint:none', '-quiet')
+  // Sets the input (source) file encoding to UTF-8. The javadoc tool will also
+  // use this for the output (HTML) file encoding. Without this option, the
+  // javadoc tool will use the default encoding for the platform.
+  options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+
+components.java.withVariantsFromConfiguration(configurations.testFixturesApiElements) { skip() }
+components.java.withVariantsFromConfiguration(configurations.testFixturesRuntimeElements) { skip() }
+
+// Provide a helpful error message for missing sonatype credentials.
+tasks.findAll {
+  if (it.name.matches("publish.+ToSonatypeRepository")) {
+    it.doFirst {
+      def user = project.properties.get("sonatypeUser")
+      def pass = project.properties.get("sonatypePassword")
+      if (user == null || user.length() == 0) {
+        throw new GradleException("Missing property for sonatype username, try -PsonatypeUser=foo")
+      }
+      if (pass == null || pass.length() == 0) {
+        throw new GradleException("Missing property for sonatype password, try -PsonatypePassword=foo")
+      }
+    }
+  }
+}
+
+ext.configurePom = { publication, nameToSet, descriptionToSet ->
+  publication.pom {
+    name = nameToSet
+    description = descriptionToSet
+    packaging 'jar'
+    url = 'https://github.com/googleads/google-ads-java'
+    licenses {
+      license {
+        name = 'The Apache License, Version 2.0'
+        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+      }
+    }
+    scm {
+      connection = 'scm:git:https://github.com/googleads/google-ads-java'
+      developerConnection = 'scm:git:https://github.com/malickgalant/google-ads'
+      url = 'https://github.com/malickgalant/google-ads'
+    }
+    developers {
+      developer {
+        id = 'josh'
+        name = 'Josh Radcliff'
+        email = 'jradcliff@users.noreply.github.com'
+        organization = 'Google'
+        organizationUrl = 'https://www.google.com'
+      }
+      developer {
+        id = 'Madness Vibez'
+        name = 'Malick Galant'
+        email = 'malickgalant@users.noreply.github.com'
+        organization = 'Google'
+        organizationUrl = 'https://www.adball.online'
+      }
+      developer {
+        id = 'devin'
+        name = 'Devin Chasanoff'
+        email = 'devchas@users.noreply.github.com'
+        organization = 'Google'
+        organizationUrl = 'https://www.google.com'
+      }
+    }
+  }
+}
+
+// Disables signing tasks except on sonatype deploy. Avoids failing build for
+// users without GPG configured.
+if (project.properties.containsKey("release")) {
+  signing {
+    sign publishing.publications
+  }
+}
+
+dependencies {
+  api 'com.google.api:gax'
+  api 'com.google.api:gax-grpc'
+  // Generated code requires at least 3.19.6 of protobuf-java.
+  api 'com.google.protobuf:protobuf-java:3.19.6'
+  api 'com.google.protobuf:protobuf-java-util:3.19.6'
+  api 'io.grpc:grpc-stub'
+  api 'io.grpc:grpc-protobuf'
+  api 'com.google.auth:google-auth-library-oauth2-http:1.5.3'
+  api 'com.google.auth:google-auth-library-credentials:1.5.3'
+  api platform('com.google.cloud:google-cloud-shared-dependencies:2.8.0')
+  implementation 'com.google.guava:guava:31.0.1-android'
+  implementation 'com.google.auto.service:auto-service:1.0.1'
+  implementation 'javax.annotation:javax.annotation-api'
+  annotationProcessor 'com.google.auto.service:auto-service:1.0.1'
+  testImplementation 'junit:junit:4.13.1'
+}
+
+// Disables a task unless we're publishing something.
+def disableUnlessPublishing(toDisable) {
+  toDisable.enabled = false
+  gradle.taskGraph.whenReady {
+    gradle.taskGraph.allTasks
+            .findAll { it.group == "publishing" }
+            .any { toDisable.enabled = true }
+  }
+}
+disableUnlessPublishing(tasks.javadocJar)
+disableUnlessPublishing(tasks.javadoc)
+disableUnlessPublishing(tasks.sourcesJar)
+
+class ExampleRunnerTask extends JavaExec {
+
+  // The base package for all examples.
+  @Internal
+  private String basePackage = 'com.google.ads.googleads.examples.'
+
+  // Hints for failed executions.
+  private final String exampleInvocation = 'For example, ' +
+    '\033[0;35m--example="basicoperations.GetCampaigns"\033[0m.\n' +
+    'Run \033[0;35m./gradlew -q listExamples\033[0m to list all examples, or ' +
+    '\033[0;35m./gradlew -q listExamples --subdirectory="basicoperations"\033[0m ' +
+    'to list examples in a specific subdirectory.\n\n'
+
+  // The package.ClassName and any arguments required to launch an example,
+  // for example "basicoperations.GetCampaigns --customerId 1234567890".
+  @Optional
+  @Input
+  private String exampleArguments
+
+  ExampleRunnerTask() {
+    group = 'Execution'
+    description = 'Run a Google Ads API example.'
+    errorOutput = System.err
+  }
+
+  String getBasePackage() {
+    return this.basePackage
+  }
+
+  void setBasePackage(String basePackage) {
+    this.basePackage = basePackage
+  }
+
+  String getExampleArguments() {
+    return this.exampleArguments
+  }
+
+  @Option(option = 'example', description = 'Sets the example to launch and' +
+    ' any arguments. Required for execution. For example, ' +
+    '"basicoperations.GetCampaigns --customerId 1234567890"')
+  void setExampleArguments(String exampleArguments) {
+    this.exampleArguments = exampleArguments.trim()
+    int firstSpaceIndex = this.exampleArguments.indexOf(' ')
+
+    // No additional arguments were passed, just the example name.
+    if (firstSpaceIndex == -1) {
+      main = this.basePackage + this.exampleArguments
+    }
+    // Otherwise, separate the input and set the arguments to pass to the
+    // main class.
+    else {
+      main = this.basePackage + this.exampleArguments[0..firstSpaceIndex - 1]
+      argsString(exampleArguments[(firstSpaceIndex + 1)..-1])
+    }
+  }
+
+  @TaskAction
+  @Override
+  void exec() {
+    if (!(exampleArguments?.trim())) {
+      throw new GradleException('\033[0;31mMissing example!\033[0m ' +
+        'Please rerun with one provided. ' + exampleInvocation)
+    }
+    logQuietMessage('Running example: ' + main + ', args: ' +
+      args.toString())
+    try {
+      super.exec()
+    }
+    catch (Exception e) {
+      logQuietMessage('\n\033[0;31mrunExample exception!\033[0m Did ' +
+        'you provide a valid example identifier? ' + exampleInvocation +
+        e.message)
+      throw e
+    }
+  }
+
+  // Prints a message to the console, even in quiet mode.
+  private void logQuietMessage(String message) {
+    logger.quiet(message)
+  }
+}
+
+class ListExamplesTask extends DefaultTask {
+
+  // Regex for extracting descriptions. Isolates the Javadoc comment immediately
+  // preceeding the class definition.
+  private static final String COMMENT_REGEX =
+    '(?s)(/\\*\\*(?:(?!/\\*\\*).)*?\\*/)(?:(?:(?!\\*/).)*?)(?=public class )'
+
+  // Regex for comment markers.
+  private static final String COMMENT_MARKERS = '(/\\*\\*\\s+|\\*\\s|\\*/)'
+
+  // The base directory containing all examples.
+  private static final String MAIN_EXAMPLES_BASE_DIRECTORY =
+    'src/main/java/com/google/ads/googleads/examples/'
+
+  // A list of subdirectories to exclude from the printout.
+  @Input
+  List<String> directoriesToExclude = ['utils']
+
+  // An optional subdirectory; if non-null, only examples in the specified
+  // subdirectory will be printed.
+  @Optional
+  @Input
+  private String subdirectory = null
+
+  // An optional case-sensitive search string; if non-null, only examples whose
+  // name or description contains the specified term will be printed.
+  @Optional
+  @Input
+  private String searchTerm = null
+
+  ListExamplesTask() {
+    description = 'List all available code examples with package name ' +
+      'and description.'
+  }
+
+  String getSubdirectory() {
+    return this.subdirectory
+  }
+
+  List<String> getDirectoriesToExclude() {
+    return this.directoriesToExclude
+  }
+
+  String getSearchTerm() {
+    return this.searchTerm
+  }
+
+  @Option(option = 'subdirectory', description = 'Sets a subdirectory of ' +
+    'google-ads , for example "basicoperations". Only examples in this ' +
+    'subdirectory will be printed. If not specified, all the examples ' +
+    'will be printed.')
+  void setSubdirectory(String subdirectory) {
+    this.subdirectory = subdirectory.trim()
+  }
+
+  @Option(option = 'searchTerm', description = 'Sets a case-sensitive search term, ' +
+    'for example "conversion". If set, only examples whose name or description ' +
+    'contains the specified term will be printed.')
+  void setSearchTerm(String searchTerm) {
+    this.searchTerm = searchTerm.trim()
+  }
+
+  // Traverse a given directory, printing the information for each example.
+  int traverseDirectory(String dir, int offset) {
+    int count = 0
+
+    // Determine the number of leading characters in the directory path. This
+    // value is different depending on which subproject we are traversing.
+    int baseLength = (subdirectory ?
+      project.file(dir).absolutePath.lastIndexOf('/') :
+      project.file(dir).absolutePath.length()) + 1
+
+    project.file(dir).traverse(
+        type                : FileType.FILES,
+        preDir              : { if (it.name in directoriesToExclude)
+                                return FileVisitResult.SKIP_SUBTREE },
+        excludeNameFilter   : { it in directoriesToExclude },
+        nameFilter          : { it.endsWith('.java') },
+        sort                : { a, b -> a.name <=> b.name }
+    ) {
+        // Strip out the base directory, truncate the .java file extension,
+        // and replace the / with . to indicate package name.
+        String className = it.path.substring(baseLength,
+          it.path.length()-5).replaceAll('/','.')
+
+        // Fetch the example description.
+        Matcher matcher = it.text =~ COMMENT_REGEX
+        String description =
+          matcher ? matcher[0][0] : "*description missing*"
+
+        if (!searchTerm || className.contains(searchTerm) ||
+          description.contains(searchTerm)) {
+          // Print the count, package.class name, and description (without
+          // comment markers and trailing newlines).
+          println '' + (++count + offset) + ': ' + className + ' - ' +
+            description.replaceAll(COMMENT_MARKERS,'').strip()
+        }
+    }
+
+    return count
+  }
+
+  @TaskAction
+  void exec() {
+    String mainExamplesDirectory = subdirectory ?
+      MAIN_EXAMPLES_BASE_DIRECTORY + subdirectory + '/' : MAIN_EXAMPLES_BASE_DIRECTORY
+    int count = 0
+
+    count += traverseDirectory(mainExamplesDirectory, count)
+
+    println "\nTotal examples: $count"
+  }
+}
