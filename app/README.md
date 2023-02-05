@@ -1,6 +1,6 @@
-# Readme App
+**Malick Ads App**
 
-An example project that demonstrates loading and showing banner ads.
+An Example project that demonstrates loading and showing banner ads.
 
 ## Always test with test ads
 
