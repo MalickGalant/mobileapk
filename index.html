@@ -106,7 +106,7 @@ if(typeof(DoNotDisplayIA)!='number'){ // check for variable preventing multiple 
 var w=window.open("", "[%Targetwindow%]", "width=[%Width%],height=[%Height%],toolbar=[%Displaytoolbar%],location=[%Displayaddressbar%],status=[%Displaystatusbar%],menubar=[%Displaymenubar%],scrollbars=[%Displayscrollbars%],resizable=[%Allowthewindowtoberesized%],directories=[%Displaydirectorybuttons%],fullscreen=[%Displayinfullscreenmode%]");
 if(w){
 	w.document.open();
-	w.document.write('<html><head><title>&nbsp;Advertisement</title></head><body marginheight=0 marginwidth=0 leftmargin=0 topmargin=0><a href="%c[%ClickthroughURL%]" target="_blank"><img src="    %%VIEW_URL_UNESC%%[%Imagefile%]" border="0"></a></body></html>');
+	w.document.write('<html><head><title>&nbsp;Advertisement</title></head><body marginheight=0 marginwidth=0 leftmargin=0 topmargin=0><a href="%c[%ClickthroughURL%]" target="_blank"><img src="https://pixabay.com/images/id-6975462/%%VIEW_URL_UNESC%%[%Imagefile%]" border="0"></a></body></html>');
 	w.document.close();
 	if("[%Type%]"=="Pop-under")w.blur(); // try to make the window a pop-under
 }
