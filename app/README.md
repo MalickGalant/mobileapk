@@ -1,4 +1,4 @@
-# Malick Ads App 
+## Maliek App 
 
 An Example project that demonstrates loading and showing banner ads.
 
