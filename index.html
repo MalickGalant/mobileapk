@@ -2,6 +2,7 @@
 <head>
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
 <script type="text/javascript" src="https://www.gstatic.com/dfp/creatives/gi.js"></script>
+
 <style>
 * {
   margin: 0;
@@ -105,7 +106,7 @@ if(typeof(DoNotDisplayIA)!='number'){ // check for variable preventing multiple 
 var w=window.open("", "[%Targetwindow%]", "width=[%Width%],height=[%Height%],toolbar=[%Displaytoolbar%],location=[%Displayaddressbar%],status=[%Displaystatusbar%],menubar=[%Displaymenubar%],scrollbars=[%Displayscrollbars%],resizable=[%Allowthewindowtoberesized%],directories=[%Displaydirectorybuttons%],fullscreen=[%Displayinfullscreenmode%]");
 if(w){
 	w.document.open();
-	w.document.write('<html><head><title>&nbsp;Advertisement</title></head><body marginheight=0 marginwidth=0 leftmargin=0 topmargin=0><a href="%c[%ClickthroughURL%]" target="_blank"><img src="%%VIEW_URL_UNESC%%[%Imagefile%]" border="0"></a></body></html>');
+	w.document.write('<html><head><title>&nbsp;Advertisement</title></head><body marginheight=0 marginwidth=0 leftmargin=0 topmargin=0><a href="%c[%ClickthroughURL%]" target="_blank"><img src="    %%VIEW_URL_UNESC%%[%Imagefile%]" border="0"></a></body></html>');
 	w.document.close();
 	if("[%Type%]"=="Pop-under")w.blur(); // try to make the window a pop-under
 }
