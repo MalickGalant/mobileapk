@@ -51,7 +51,7 @@ src="data:image/gif;base64,R0lGODlhEAAQAMQAAP%2F%2F%2F%2B7u7t3d3bu7u6qqqpmZmYiIi
   var init = function() {
     var builder = new xfp.creative.GraphicalInterstitial.ParameterBuilder();
     builder
-        .addImage('[https://pixabay.com/images/id-6975462/]')
+        .addImage('[]')
         .addImage('[%Image2%]')
         .addImage('[%Image3%]')
         .addImage('[%Image4%]')
@@ -99,21 +99,6 @@ src="data:image/gif;base64,R0lGODlhEAAQAMQAAP%2F%2F%2F%2B7u7t3d3bu7u6qqqpmZmYiIi
     }, 100);
   }, false);
 </script>
-<script type="text/javascript">
-if(typeof(DoNotDisplayIA)!='number'){ // check for variable preventing multiple pop-ups from appearing
-(function(){ // anonymous function to limit scope 
 
-var w=window.open("", "[%Targetwindow%]", "width=[%Width%],height=[%Height%],toolbar=[%Displaytoolbar%],location=[%Displayaddressbar%],status=[%Displaystatusbar%],menubar=[%Displaymenubar%],scrollbars=[%Displayscrollbars%],resizable=[%Allowthewindowtoberesized%],directories=[%Displaydirectorybuttons%],fullscreen=[%Displayinfullscreenmode%]");
-if(w){
-	w.document.open();
-	w.document.write('<html><head><title>&nbsp;Advertisement</title></head><body marginheight=0 marginwidth=0 leftmargin=0 topmargin=0><a href="%c[%ClickthroughURL%]" target="_blank"><img src="%%VIEW_URL_UNESC%%[%Imagefile%]" border="0"></a></body></html>');
-	w.document.close();
-	if("[%Type%]"=="Pop-under")w.blur(); // try to make the window a pop-under
-}
-
-})() // end anonymous function
-DoNotDisplayIA=1; // set variable preventing multiple pop-ups from appearing
-}
-</script>
 </body>
 </html>
