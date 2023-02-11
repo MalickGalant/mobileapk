@@ -13,12 +13,63 @@
 </head>
 <body>
 
+<amp-carousel height="300" layout="fixed-height" type="slides" role="region" aria-label="Carousel with arbitrary HTML content">
+    <div>
+      <div class="blue-box">
+        This is a blue box.
+      </div>
+    </div>
+    <div>
+      <div class="red-box">
+        This is a red box.
+      </div>
+    </div>
+    <div>
+      <div class="green-box">
+        This is a green box.
+      </div>
+    </div>
+  </amp-carousel>
+
+ <amp-state id="captcha">
+      <script type="application/json">
+        {
+           "state1": {
+                 "result": "10",
+                 "condition": "+",
+                 "captchaCorrect": "6"
+
+           },
+           "state2": {
+                 "result": "2",
+                 "condition": "-",
+                 "captchaCorrect": "6"
+           },
+           "state3": {
+                 "result": "8",
+                 "condition": "*",
+                 "captchaCorrect": "2"
+           }
+         }
+      </script>
+    </amp-state>
+    
+    <form action="https://www.google.com/" method="get" target="_top">
+      <input name="s" placeholder="Type Anything" type="text" on="input-debounced:AMP.setState({state: 'state1'})" required>
+        <input [disabled]="!state" disabled type="text" name [pattern]="captcha[state].captchaCorrect" title="AMP recaptcha input" required>
+        <span [text]="captcha[state].condition">+</span>
+        <span>4</span>
+        <span>=</span>
+        <span [text]="captcha[state].result">10</span>
+        <span on="tap:AMP.setState({state: (state == 'state1' ? 'state2' : state == 'state2' ? 'state3': 'state1')})" role="button" tabindex="0"></span>
+        <amp-img src="https://fonts.gstatic.com/s/i/materialicons/autorenew/v4/24px.svg" width="24" height="24"></amp-img>
+      <input type="submit" value="Submit">
+    </form>
   
-  <amp-ad width="300" height="250" type="a9" data-amzn_assoc_ad_mode="auto" data-divid="amzn-assoc-ad-fe746097-f142-4f8d-8dfb-45ec747632e5" data-recomtype="async" data-adinstanceid="fe746097-f142-4f8d-8dfb-45ec747632e5">
-  </amp-ad>
+  
 
 
-
+  <div align="center">
 
   <amp-ad width="300" height="200" type="doubleclick" data-slot="/4119129/doesnt-exist">
     <div placeholder>
@@ -34,6 +85,6 @@
       <p>You got lucky! We have no ad to show to you!</p>
     </div>
   </amp-ad>
-
+ </div>
 
 </body></html>
