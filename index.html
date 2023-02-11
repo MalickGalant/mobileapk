@@ -1,8 +1,3 @@
-<!--
-  ## Introduction
-
-  How to display ads in your AMP HTML files.
---><!-- -->
 <!doctype html>
 <html ⚡ lang="en">
 <head>
@@ -18,31 +13,27 @@
 </head>
 <body>
 
-  <!-- ## Basic usage -->
-  <!--
-    `amp-ad` requires `width` and `height` values. Select an ad network via the type argument.
-  -->
+  
   <amp-ad width="300" height="250" type="a9" data-amzn_assoc_ad_mode="auto" data-divid="amzn-assoc-ad-fe746097-f142-4f8d-8dfb-45ec747632e5" data-recomtype="async" data-adinstanceid="fe746097-f142-4f8d-8dfb-45ec747632e5">
   </amp-ad>
 
-  <!-- ## Placeholder -->
-  <!--
-    Optionally `amp-ad` supports a child element with the `placeholder` attribute. If supported by the ad network, this element is shown until the ad is available for viewing.
-  -->
+
+
+
   <amp-ad width="300" height="200" type="doubleclick" data-slot="/4119129/doesnt-exist">
     <div placeholder>
-      <b>Placeholder here!!!</b>
+      <b>Placeholder Here!</b>
     </div>
   </amp-ad>
 
-  <!-- ## Fallback -->
-  <!--
-    `amp-ad` supports a child element with the `fallback` attribute. If supported by the ad network, this element is shown if no ad is available for this slot.
-  -->
+  
+
   <amp-ad width="300" height="200" type="doubleclick" data-slot="/4119129/doesnt-exist">
     <div fallback>
-      <p>Thank you for trying AMP!</p>
+      <p>Thank you for trying our AMP!</p>
       <p>You got lucky! We have no ad to show to you!</p>
     </div>
   </amp-ad>
+
+
 </body></html>
