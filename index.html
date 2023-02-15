@@ -1,52 +1,165 @@
-<!doctype html>
-<html ⚡ lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
+<!DOCTYPE html>
+    <head>
+        <meta charset='utf-8'>
+        <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+        <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
 
-  <title>Maliek Mobile</title>
+        <!--Update to your ads dimensions-->
+        <meta name='adsize' content='width:300,height:250'>
+        <link rel='stylesheet' href='css/adMain.css'>
 
-  <script async src="https://cdn.ampproject.org/v0.js"></script>  
-  <script async custom-element="amp-ad" src="https://cdn.ampproject.org/v0/amp-ad-0.1.js"></script>
-  <link rel="canonical" href="index.html">
-  <link rel="stylesheet" href="https://malickgalant.github.io/mobileapk/style.css">
+        <!-- Uncomment for MRAID support -->
+        <!--<script defer src='mraid.js'></script>-->
 
-  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+        <script defer src='js/adMain.js'></script>
+    </head>
+    <body>
+        <section class='adContainer' data-clickTag1='http://www.example.com'>
+            <!-- Add your ad content here -->
+            <h1>I am the HTML5 Ad Boilerplate.</h1>
+            <p>Helping you build ad creative quicker</p>
+            <!-- -->
+        </section>
 
-</head>
-<body> 
-  <div align="center">
+        <script>
+            var ad;
 
-  <h1>MalicMac</h1>
+            window.onload = function() {
+                var ad = new HTML5Ad();//Create new HTML5 Ad
+
+                ad.init({
+                    'adContainer':'.adContainer',//target as class or ID
+                    'createAdBorder':true,//true || false
+                    'adType':'static',//expandable || interstitial || static
+                    'mraid':false,//true || false
+                    'safeFrame':false//true || false
+                });
 
 
-  
- </div>
+            };
+            window.addEventListener('adReady', function(e) {
+                console.info('Event is: ', e);
 
-        <div class='container'>
+                var adContainer = document.querySelector('.adContainer'),
+                    interactionAction = 'click' || 'touchend',
+                    url = adContainer.getAttribute('data-clickTag1');
 
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
-        
-        <div class='scrollad-container'>
-            <div class='img-ad'>
-            </div>
-        </div>
+                //wire up global click interaction for ad
+                adContainer.addEventListener(interactionAction, function () {
+                    ad.openURL(url);
+                }, false);
 
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
+                //Need location?
+                if(navigator.geolocation) {
+                  navigator.geolocation.getCurrentPosition(handleGeolocationQuery, handleLocationErrors);
+                } else {
+                  console.warn('Browser does not support geolocation')
+                }
 
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
-        <div class='content'></div>
+                //Need accelerometer?
+                if (window.DeviceOrientationEvent || window.OrientationEvent) {
+                  tiltHandler();
+                } else {
+                  console.warn('Browser does not support orientation');
+                }
 
-    </div>
-</body>
+            });
+
+            window.addEventListener('adVisible', function(e) {
+                console.info('The ad is visible: ', e);
+            });
+            window.addEventListener('adHidden', function(e) {
+                console.info('The ad is hidden: ', e);
+            });
+            window.addEventListener('adExpand', function(e) {
+                console.info('The ad is expanded: ', e);
+            });
+            window.addEventListener('adClosed', function(e) {
+                console.info('The ad is closed: ', e);
+            });
+
+
+            //Location
+            //-------------------------------
+            function handleLocationErrors (error) {
+                switch (error.code) {
+                  case error.PERMISSION_DENIED:
+                      console.error('Error :>> user did not share geolocation data');
+                      break;
+                  case error.POSITION_UNAVAILABLE:
+                      console.error('Error :>> could not detect current position');
+                      break;
+                  case error.TIMEOUT:
+                      console.error('Error :>> retrieving position timed out');
+                      break;
+                  default:
+                      console.error('Error :>> unknown error');
+                      break;
+                }
+            }
+
+            function handleGeolocationQuery (position) {
+                myLat = position.coords.latitude;
+                myLong = position.coords.longitude;
+                console.log('Lat = ' + myLat + ' Long = ' + myLong);
+
+                //do something with the location data here
+            }
+
+            //Accelerometer
+            //--------------------------------
+            function tiltHandler (event) {
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener('deviceorientation', function (eventData) {
+                      // gamma is the left-to-right tilt in degrees, where right is positive
+                      var tiltLR = eventData.gamma;
+                      // beta is the front-to-back tilt in degrees, where front is positive
+                      var tiltFB = eventData.beta;
+                      // alpha is the compass direction the device is facing in degrees
+                      var dir = eventData.alpha
+                      // deviceorientation does not provide this data
+                      var motUD = null;
+                      // call our orientation event handler
+                      deviceOrientationHandler(tiltLR, tiltFB, dir, motUD);
+                    }, false);
+                } else if (window.OrientationEvent) {
+                    window.addEventListener('MozOrientation', function (eventData) {
+                      // x is the left-to-right tilt from -1 to +1, so we need to convert to degress
+                      var tiltLR = eventData.x * 90;
+                      // y is the front-to-back tilt from -1 to +1, so we need to convert to degress
+                      // We also need to invert the value so tilting the device towards us (forward)
+                      // results in a positive value.
+                      var tiltFB = eventData.y * -90;
+                      // MozOrientation does not provide this data
+                      var dir = null;
+                      // z is the vertical acceleration of the device
+                      var motUD = eventData.z;
+                      deviceOrientationHandler(tiltLR, tiltFB, dir, motUD);
+                    }, false);
+                }
+            }
+
+            function deviceOrientationHandler (tiltLR, tiltFB, dir, motionUD) {
+                // Apply the transform to the dummy image
+                var vid = document.querySelector('body');
+                vid.style.webkitTransform = 'rotate(' + tiltLR + 'deg) rotate3d(1,0,0, ' + (tiltFB * -1) + 'deg)';
+                vid.style.MozTransform = 'rotate(' + tiltLR + 'deg)';
+                vid.style.transform = 'rotate(' + tiltLR + 'deg) rotate3d(1,0,0, ' + (tiltFB * -1) + 'deg)';
+            }
+
+
+
+        </script>
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+        <!--<script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>-->
+
+        <!-- Other Analytics: -->
+    </body>
 </html>
+<!-- If publisher requires, place offlineCache.txt url here for offline ad support -->
