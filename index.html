@@ -4,7 +4,6 @@
   <script async src="https://cdn.ampproject.org/v0.js"></script>
   <script async custom-element="amp-lightbox" src="https://cdn.ampproject.org/v0/amp-lightbox-0.1.js"></script>
   <script async custom-element="amp-bind" src="https://cdn.ampproject.org/v0/amp-bind-0.1.js"></script>
-
   <link rel="canonical" href="https://amp.dev/documentation/examples/components/amp-lightbox/index.html">
   <meta name="viewport" content="width=device-width">
 
@@ -58,16 +57,15 @@
   </head>
 
   <body>
-    <!-- ## Lightbox grouping -->
-    <!-- By default, all lightboxed elements will be grouped into the same lightbox unless they belong to a carousel. All elements in the same lightboxed carousel belong to the same lightbox. You can override this behavior by setting the lightbox attribute to a unique string. One common pattern is to have one hero image that opens up into a lightbox gallery of several images. -->
-
+    
     <div>
-      <amp-img lightbox="hero" src="/static/samples/img/clean-2.jpg" width="400" height="300" layout="responsive">
-        <span class="overlay-text">See photo gallery</span>
+      <amp-img lightbox="hero" src="logo.jpg" width="400" height="300" layout="responsive">
+        <span class="overlay-text">Login</span>
       </amp-img>
+
     <div hidden>
-      <amp-img lightbox="hero" src="/static/samples/img/clean-1.jpg" layout="responsive" width="400" height="710"></amp-img>
-      <amp-img lightbox="hero" src="/static/samples/img/clean-3.jpg" width="400" height="300" layout="responsive"></amp-img>
+      <amp-img lightbox="hero" src="/img/clean-1.jpg" layout="responsive" width="400" height="710"></amp-img>
+      <amp-img lightbox="hero" src="/clean-3.jpg" width="400" height="300" layout="responsive"></amp-img>
     </div>
   </div>
 
@@ -78,34 +76,8 @@
   - aria-describedby
   The following examples demonstrate how to use captions. The first image does not have a caption. The second image uses `<figcaption>`. The third image uses `aria-describedby`.
   -->
-  <div>
+  
 
-    <amp-img lightbox="caption" src="/static/samples/img/road-1.jpg" width="300" height="200" layout="responsive"></amp-img>
-    <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-    <figure class="sample-figure">
-      <amp-img lightbox="caption" src="/static/samples/img/road-2.jpg" width="300" height="200" layout="responsive"></amp-img>
-      <figcaption>
-        This is a long road. We don't know where it leads.
-      </figcaption>
-    </figure>
-    <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-    <amp-img lightbox="caption" src="/static/samples/img/road-3.jpg" layout="responsive" width="300" height="200" aria-describedby="desc">
-    </amp-img>
-    <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-
-    <div hidden id="desc">
-      I'm not too sure where this road leads either.
-    </div>
-  </div>
-  <!-- ## Basic usage -->
-  <!--
-    The `amp-lightbox` component defines the child elements that will be displayed in a full-viewport overlay.
-    To close the lightbox via click or tap use the `on` attribute on one or more elements inside the lightbox. In this example the user can click anywhere in the lightbox to close it.
-
-    The lighbox is shown when the user taps or clicks on an element with `on` attribute that targets the id of an `amp-lightbox` element.
-  -->
   <div>
     <amp-lightbox id="my-lightbox" layout="nodisplay">
       <div class="lightbox" on="tap:my-lightbox.close" role="button" tabindex="0">
@@ -113,12 +85,20 @@
       </div>
     </amp-lightbox>
 
-    <button on="tap:my-lightbox">
+    <button class"overlay-text" on="tap:my-lightbox">
       Open Fake
     </button>
-
+  
   </div>
 
+  <!-- ## Basic usage -->
+  <!--
+    The `amp-lightbox` component defines the child elements that will be displayed in a full-viewport overlay.
+    To close the lightbox via click or tap use the `on` attribute on one or more elements inside the lightbox. In this example the user can click anywhere in the lightbox to close it.
+
+    The lighbox is shown when the user taps or clicks on an element with `on` attribute that targets the id of an `amp-lightbox` element.
+  -->
+  
   <!--
     For showing images in a lightbox, AMP also features the [amp-image-lightbox](/documentation/components/reference/amp-image-lightbox.html) component, which doesn't need the image to specified twice.
   -->
@@ -132,14 +112,14 @@
       </div>
     </amp-lightbox>
 
-    <button class="button" on="tap:AMP.setState({showLightbox: true})">
-      Open Ad
+    <button class="overlay-text" on="tap:AMP.setState({showLightbox: true})">
+      Advertisement
     </button>
 
   </div>
 
   <div style="width:300px; height:250px; padding:15px; background-color:blue; color: white">Test 1</div>
 
-    
+    <span class="">Login</span>
   </body>
 </html>
